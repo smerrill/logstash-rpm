@@ -11,14 +11,14 @@
 %global sysconfigdir %{_sysconfdir}/sysconfig
 
 Name:           logstash
-Version:        1.1.9
+Version:        1.1.10
 Release:        1%{?dist}
 Summary:        A tool for managing events and logs
 
 Group:          System Environment/Daemons
 License:        ASL 2.0
 URL:            http://logstash.net
-Source0:        https://logstash.objects.dreamhost.com/release/%{name}-%{version}-monolithic.jar
+Source0:        https://logstash.objects.dreamhost.com/release/%{name}-%{version}-flatjar.jar
 Source1:        logstash.wrapper
 Source2:        logstash.logrotate
 Source3:        logstash.init
@@ -147,6 +147,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{piddir}/
 
 %changelog
+* Thu Apr 25 2013 dmaher@mozilla.com 1.1.10-1
+- Use flatjar instead of monolithic
+- Update logstash version to 1.1.10
 * Tue Jan 22 2013 dmaher@mozilla.com 1.1.9-1
 - Add chkconfig block to init
 - Update logstash version to 1.1.9
