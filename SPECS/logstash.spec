@@ -134,7 +134,6 @@ rm -rf $RPM_BUILD_ROOT
 # Wrapper script
 %{bindir}/*
 
-
 # Logrotate
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 
