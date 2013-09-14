@@ -26,16 +26,21 @@ LOCK_FILE=${LOCKFILE:-@@@LOCKFILE@@@}
 LOG_FILE=${LOGFILE:-@@@LOGDIR@@@/${NAME}.log}
 
 LOGSTASH_PATH_CONF=${LOGSTASH_PATH_CONF:-@@@CONFDIR@@@}
-LOGSTASH_PATH_PLUGINS=${LOGSTASH_PATH_PLUGINS:-@@@PLUGINDIR@@@}
+LOGSTASH_PATH_PLUGINS=${LOGSTASH_PATH_PLUGINS}
 LOGSTASH_LOGLEVEL=${LOGSTASH_LOGLEVEL:-"warn"}
 
 DAEMON_OPTS="\
   -P ${PID_FILE} \
-  -p ${LOGSTASH_PATH_PLUGINS} \
   -l ${LOG_FILE} \
   -f ${LOGSTASH_PATH_CONF} \
   -v $LOGSTASH_LOGLEVEL \
 "
+
+# Having an incorrect pluginpath will cause Logstash not to start.
+if [ ! -z "$LOGSTASH_PATH_PLUGINS" ]; then
+  DAEMON_OPTS = "${DAEMON_OPTS} \
+-p ${LOGSTASH_PATH_PLUGINS}"
+fi
 
 start() {
     echo -n $"Starting ${NAME}: "

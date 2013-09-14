@@ -1,5 +1,4 @@
 all: download build
-	echo "Making All"
 
 download:
 	spectool -gf -C SOURCES SPECS/logstash.spec
