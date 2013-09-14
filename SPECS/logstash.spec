@@ -1,4 +1,7 @@
-%define debug_package %{nil}_bindir}
+# do not repack jar files
+%define __os_install_post %{nil}
+%define __jar_repack %{nil}
+%define debug_package %{nil}
 %define base_install_dir %{_javadir}{%name}
 
 %global bindir %{_bindir}
