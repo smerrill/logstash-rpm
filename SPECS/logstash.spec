@@ -1,5 +1,6 @@
-%define debug_package %{nil}_bindir}
+%define debug_package %{nil}
 %define base_install_dir %{_javadir}{%name}
+%define __jar_repack %{nil}
 
 %global bindir %{_bindir}
 %global confdir %{_sysconfdir}/%{name}
@@ -9,6 +10,26 @@
 %global piddir %{_localstatedir}/run/%{name}
 %global plugindir %{_datadir}/%{name}
 %global sysconfigdir %{_sysconfdir}/sysconfig
+
+%if 0%{?rhel} <= 5
+  %global initddir %{_initrddir}
+
+  # Don't repack jars.
+  %define __os_install_post \
+    /usr/lib/rpm/redhat/brp-compress ; \
+    %{!?__debug_package:/usr/lib/rpm/redhat/brp-strip %{__strip}} ; \
+    /usr/lib/rpm/redhat/brp-strip-static-archive %{__strip} ; \
+    /usr/lib/rpm/redhat/brp-strip-comment-note %{__strip} %{__objdump} ; \
+    /usr/lib/rpm/brp-python-bytecompile ; \
+    %{nil}
+%else
+  %global initddir %{_initddir}
+
+  # Don't repack jars.
+  %define __jar_repack %{nil}
+%endif
+
+
 
 Name:           logstash
 Version:        1.2.1
@@ -71,9 +92,9 @@ rm -rf $RPM_BUILD_ROOT
 %{__mkdir} -p %{buildroot}%{piddir}
 
 # sysconfig and init
-%{__mkdir} -p %{buildroot}%{_initddir}
+%{__mkdir} -p %{buildroot}%{initddir}
 %{__mkdir} -p %{buildroot}%{_sysconfdir}/sysconfig
-%{__install} -m 755 %{SOURCE3} %{buildroot}%{_initddir}/%{name}
+%{__install} -m 755 %{SOURCE3} %{buildroot}%{initddir}/%{name}
 %{__install} -m 644 %{SOURCE4} %{buildroot}%{sysconfigdir}/%{name}
 
 # Using _datadir for PLUGINDIR because logstash expects a structure like logstash/{inputs,filters,outputs}
@@ -85,7 +106,7 @@ rm -rf $RPM_BUILD_ROOT
    -e "s|@@@LOGDIR@@@|%{logdir}|g" \
    -e "s|@@@PIDDIR@@@|%{piddir}|g" \
    -e "s|@@@PLUGINDIR@@@|%{_datadir}|g" \
-   %{buildroot}%{_initddir}/%{name}
+   %{buildroot}%{initddir}/%{name}
 
 %{__sed} -i \
    -e "s|@@@NAME@@@|%{name}|g" \
@@ -138,7 +159,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 
 # Sysconfig and init
-%{_initddir}/%{name}
+%{initddir}/%{name}
 %config(noreplace) %{sysconfigdir}/*
 
 %defattr(-,%{name},%{name},-)
